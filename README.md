@@ -1,10 +1,10 @@
 <p align="center">
-  <a href="https://github.com/actions/typescript-action/actions"><img alt="typescript-action status" src="https://github.com/actions/typescript-action/workflows/build-test/badge.svg"></a>
+  <a href="https://github.com/jwulf/ghettohubDB/actions"><img alt="typescript-action status" src="https://github.com/jwulf/ghettohubDB/workflows/build-test/badge.svg"></a>
 </p>
 
-# Create a JavaScript Action using TypeScript
+# A JSON DB in a GitHub repo via GitHub Actions
 
-Use this template to bootstrap the creation of a JavaScript action.:rocket:
+**Warning:** This is definitely _not_ webscale.
 
 This template includes compilication support, tests, a validation workflow, publishing, and versioning guidance.  
 

@@ -4,7 +4,7 @@ author: 'Josh Wulf <josh@magikcraft.io>'
 inputs:
   github_token: 
     required: true
-    description: "Set to $${{ secrets.GITHUB_TOKEN }} so the database can commit to the repo"
+    description: "Set to ${{secrets.GITHUB_TOKEN }} so the database can commit to the repo"
   operation:    
     required: true         
     description: 'The operation to perform: FIND | UPSERT | DELETE | INIT'
