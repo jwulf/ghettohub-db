@@ -27,6 +27,7 @@ async function run(): Promise<void> {
   const operation = core.getInput('operation', {
     required: true
   }) as GhettoDBOperation
+  core.info(`Running ${operation} operation`)
   const parsedConfig = resolveRequiredParameters({
     operation,
     table: core.getInput('table'),
