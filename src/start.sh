@@ -26,8 +26,6 @@ cd ${INPUT_DIRECTORY}
 
 git config --local user.email "action@github.com"
 git config --local user.name "GhettoHubDB GitHub Action"
-echo `pwd`
-git status
 git add .
 git commit -m "Database commit"
 

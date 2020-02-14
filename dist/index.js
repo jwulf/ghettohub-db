@@ -482,7 +482,10 @@ function run() {
         const operationResult = operations_1.default[parsedConfig.config.operation](parsedConfig.config, db);
         core.info(JSON.stringify(operationResult.result));
         core.setOutput('result', JSON.stringify(operationResult.result));
-        yield commit_1.commit();
+        if (db.dirty) {
+            core.info('Committing changes...');
+            yield commit_1.commit();
+        }
     });
 }
 run();
