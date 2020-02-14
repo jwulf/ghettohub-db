@@ -4,7 +4,7 @@
 
 # A JSON DB in a GitHub repo via GitHub Actions
 
-**Warning:** This is definitely _not_ webscale.
+**Definitely _not_ webscale.**
 
 With this GitHub Action you can use a GitHub repo as an extremely low-fi JSON DB.
 
