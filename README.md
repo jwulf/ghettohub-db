@@ -12,21 +12,25 @@ The action will perform db operations on JSON data stored as flat files (one fil
 
 It doesn't handle git merge conflicts yet, so simultaneous workflows may cause operations to fail.
 
-## Use
+## Tables
+
+Tables are `${tablename}.json` documents stored in `${basedir}` in the repo. You can specify a custom directory if you want.
+
+## Operations
 
 Supported operations:
 
 | Operation | Required parameters | Optional parameters |
 | --- | ---| --- |
-| `FINDONE` | `operation`, `table`, `query` | |
-| `FINDMANY` | `operation`, `table`, `query` | |
-| `DROP`TABLE`` | `operation`, `table`, `github_token` | |
-| `UPSERT`  | `operation`, `table`, record, `github_token` | `query` |
-| `DELETEONE` | `operation`, `table`, `query`, `github_token` | |
-| `DELETEMANY` | `operation`, `table`, `query`, `github_token` | |
+| `FINDONE` | `operation`, `table`, `query` | `basedir` |
+| `FINDMANY` | `operation`, `table`, `query` | `basedir` |
+| `DROP`TABLE`` | `operation`, `table`, `github_token` | `basedir` |
+| `UPSERT`  | `operation`, `table`, record, `github_token` | `query`, `basedir` |
+| `DELETEONE` | `operation`, `table`, `query`, `github_token` | `basedir` |
+| `DELETEMANY` | `operation`, `table`, `query`, `github_token` | `basedir` |
 | `INIT`  | `operation`  | |
-| `UPDATEONE`   |`operation`, `table`, `query`, record, `github_token` | |
-| `UPDATEMANY`  |`operation`, `table`, `query`, record, `github_token` | |
+| `UPDATEONE`   |`operation`, `table`, `query`, record, `github_token` | `basedir` |
+| `UPDATEMANY`  |`operation`, `table`, `query`, record, `github_token` | `basedir` |
 
 ## Query Syntax
 
@@ -77,7 +81,7 @@ Example output:
 
 ## Upsert a record
 
-To make sure you don't create two customer records for Joe Bloggs, you can pass a `query` parameter to the operation to let it know it should update any existing record with `{"name": "Joe Bloggs"}`:
+To make sure you don't create two customer records for Joe Bloggs, you can pass a `query` parameter to the operation to let it know it should update the existing record it finds with `{"name": "Joe Bloggs"}`, otherwise create a new one:
 
 ```
 name: Upsert record
@@ -131,3 +135,5 @@ Example output:
 ```
 {"found":true,"count":1,"record":{"name":"Joe Bloggs","address":"The Dog House","_updated":"Fri Feb 14 2020 12:47:16 GMT+0000 (Coordinated Universal Time)","_id":"a83936ee-f06c-46f2-b5ec-8e0b2e3367a1"}}
 ```
+
+## Updating records
