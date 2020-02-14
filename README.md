@@ -30,23 +30,23 @@ Supported operations:
 | --- | ---| --- |
 | `FINDONE` | `operation`, `table`, `query` | `basedir` |
 | `FINDMANY` | `operation`, `table`, `query` | `basedir` |
-| `DROP`TABLE`` | `operation`, `table`, `github_token` | `basedir` |
-| `UPSERT`  | `operation`, `table`, record, `github_token` | `query`, `basedir` |
+| `DROPTABLE` | `operation`, `table`, `github_token` | `basedir` |
+| `UPSERT`  | `operation`, `table`, `record`, `github_token` | `query`, `basedir` |
 | `DELETEONE` | `operation`, `table`, `query`, `github_token` | `basedir` |
 | `DELETEMANY` | `operation`, `table`, `query`, `github_token` | `basedir` |
 | `INIT`  | `operation`  | `tables` |
-| `UPDATEONE`   |`operation`, `table`, `query`, record, `github_token` | `basedir` |
-| `UPDATEMANY`  |`operation`, `table`, `query`, record, `github_token` | `basedir` |
+| `UPDATEONE`   |`operation`, `table`, `query`, `record`, `github_token` | `basedir` |
+| `UPDATEMANY`  |`operation`, `table`, `query`, `record`, `github_token` | `basedir` |
 
 ## Query Syntax
 
 Queries can be used to retrieve one or records, selectively update one or more records, delete one or more records, or determine whether or not an UPSERT operation creates a new record or updates an existing one.
 
-The query syntax is simple: you pass in a JSON shallow JSON document, and any document that matches that will be returned. In the case of `UPSERT`, `FINDONE`, `DELETEONE`, and `UPDATEONE`, the first match will be used.
+The query syntax is simple: you pass in a shallow JSON document, and any document that matches that will be returned. In the case of `UPSERT`, `FINDONE`, `DELETEONE`, and `UPDATEONE`, the first match will be used.
 
-New records have a UUID assigned to them as the `_id` field. 
+New records have a UUID assigned to them on creation as the `_id` field. 
 
-If no query is specified for `UPSERT` then the assigned `_id` field will be used, if the record you send in has one. This way you can retrieve a record, update it, then send it back in an `UPSERT` operation, and _know_ that it will update the existing record.
+If no query is specified for `UPSERT` then the `_id` field will be used, if the record you send in has one. This way you can retrieve a record, update it, then send it back in an `UPSERT` operation, and _know_ that it will update the existing record.
 
 ## Output
 
