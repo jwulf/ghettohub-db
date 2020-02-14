@@ -3,6 +3,7 @@ import * as core from '@actions/core'
 import {resolveRequiredParameters} from './parameters'
 import Operations from './operations'
 import {DatabaseDriver} from './operations/db-driver'
+import {commit} from './operations/commit'
 
 export type GhettoDBOperation =
   | 'FINDONE'
@@ -51,6 +52,7 @@ async function run(): Promise<void> {
 
   core.info(JSON.stringify(operationResult.result))
   core.setOutput('result', JSON.stringify(operationResult.result))
+  await commit()
 }
 
 run()

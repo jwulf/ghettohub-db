@@ -35,17 +35,15 @@ jobs:
           record:  |
             '{"name": "Joe Bloggs", "address": "The Dog House"}'
           table: customers
-      - uses: stefanzweifel/git-auto-commit-action@v3.0.0
+      - name: Commit files
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git diff --quiet && git diff --staged --quiet || (git commit -m "Update by GitHub Action from rebuild" -a)
+      - name: Push changes
+        uses: ad-m/github-push-action@master
         with:
-          commit_message: Upsert record
-          # Optional name of the branch the commit should be pushed to
-          branch: ${{ github.head_ref }}
-          # Optional git params
-          commit_options: '--no-verify --signoff'
-          # Optional commit user and author settings
-          commit_user_name: GhettoDB Action
-          commit_user_email: my-github-actions-bot@example.org
-          commit_author: Author <actions@gitub.com>
+          github_token: ${{ secrets.GITHUB_TOKEN }}
 ```
 
 * Find a record:

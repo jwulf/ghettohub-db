@@ -6,6 +6,7 @@ export interface JSONDoc {
 }
 export class DatabaseDriver {
   basedir: string
+  dirty = false
   constructor(basedir: string) {
     if (!fs.existsSync(`./${basedir}`)) {
       fs.mkdirSync(`./${basedir}`, {recursive: true})
@@ -31,6 +32,7 @@ export class DatabaseDriver {
   flushTable(tablename: string, tableData: any): void {
     const tableFile = this.getTableFile(tablename)
     fs.writeFileSync(tableFile, JSON.stringify(tableData, null, 2))
+    this.dirty = true
   }
 
   private getTableFile(tablename: string): string {
