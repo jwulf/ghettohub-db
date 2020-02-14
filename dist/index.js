@@ -455,11 +455,13 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const core = __importStar(__webpack_require__(961));
+const path_1 = __importDefault(__webpack_require__(622));
 const parameters_1 = __webpack_require__(223);
 const operations_1 = __importDefault(__webpack_require__(438));
 const db_driver_1 = __webpack_require__(160);
 const commit_1 = __webpack_require__(520);
 function run() {
+    var _a;
     return __awaiter(this, void 0, void 0, function* () {
         const operation = core.getInput('operation', {
             required: true
@@ -472,6 +474,7 @@ function run() {
             basedir: core.getInput('basedir') || 'db',
             query: core.getInput('query')
         });
+        core.info(`Basedir: ${path_1.default.resolve('./' + ((_a = parsedConfig.config) === null || _a === void 0 ? void 0 : _a.basedir))}`);
         if (!parsedConfig.valid) {
             return core.setFailed(`Missing required configuration keys for operation ${operation}: ${JSON.stringify(parsedConfig.missingKeys)}`);
         }
