@@ -14,7 +14,9 @@ It doesn't handle git merge conflicts yet, so simultaneous workflows may cause o
 
 ## Tables
 
-Tables are `${tablename}.json` documents stored in `${basedir}` in the repo. You can specify a custom directory if you want.
+Tables are `${tablename}.json` documents stored in `${basedir}` in the repo. You can specify a custom directory if you want, with the `basedir` argument.
+
+Tables are lazily created - as soon as you create a record in one, the database driver will create it. If you attempt to read from a table that has not yet been created, no error will be raised, no record will be returned, and no table will be created.
 
 ## Operations
 
@@ -28,7 +30,7 @@ Supported operations:
 | `UPSERT`  | `operation`, `table`, record, `github_token` | `query`, `basedir` |
 | `DELETEONE` | `operation`, `table`, `query`, `github_token` | `basedir` |
 | `DELETEMANY` | `operation`, `table`, `query`, `github_token` | `basedir` |
-| `INIT`  | `operation`  | |
+| `INIT`  | `operation`  | `tables` |
 | `UPDATEONE`   |`operation`, `table`, `query`, record, `github_token` | `basedir` |
 | `UPDATEMANY`  |`operation`, `table`, `query`, record, `github_token` | `basedir` |
 

@@ -34,7 +34,7 @@ module.exports =
 /******/ 	// the startup function
 /******/ 	function startup() {
 /******/ 		// Load entry module and return exports
-/******/ 		return __webpack_require__(198);
+/******/ 		return __webpack_require__(462);
 /******/ 	};
 /******/
 /******/ 	// run startup
@@ -44,31 +44,203 @@ module.exports =
 /******/ ({
 
 /***/ 19:
+/***/ (function(__unusedmodule, exports, __webpack_require__) {
+
+"use strict";
+
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (Object.hasOwnProperty.call(mod, k)) result[k] = mod[k];
+    result["default"] = mod;
+    return result;
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+const os = __importStar(__webpack_require__(87));
+/**
+ * Commands
+ *
+ * Command Format:
+ *   ::name key=value,key=value::message
+ *
+ * Examples:
+ *   ::warning::This is the message
+ *   ::set-env name=MY_VAR::some value
+ */
+function issueCommand(command, properties, message) {
+    const cmd = new Command(command, properties, message);
+    process.stdout.write(cmd.toString() + os.EOL);
+}
+exports.issueCommand = issueCommand;
+function issue(name, message = '') {
+    issueCommand(name, {}, message);
+}
+exports.issue = issue;
+const CMD_STRING = '::';
+class Command {
+    constructor(command, properties, message) {
+        if (!command) {
+            command = 'missing.command';
+        }
+        this.command = command;
+        this.properties = properties;
+        this.message = message;
+    }
+    toString() {
+        let cmdStr = CMD_STRING + this.command;
+        if (this.properties && Object.keys(this.properties).length > 0) {
+            cmdStr += ' ';
+            let first = true;
+            for (const key in this.properties) {
+                if (this.properties.hasOwnProperty(key)) {
+                    const val = this.properties[key];
+                    if (val) {
+                        if (first) {
+                            first = false;
+                        }
+                        else {
+                            cmdStr += ',';
+                        }
+                        cmdStr += `${key}=${escapeProperty(val)}`;
+                    }
+                }
+            }
+        }
+        cmdStr += `${CMD_STRING}${escapeData(this.message)}`;
+        return cmdStr;
+    }
+}
+function escapeData(s) {
+    return (s || '')
+        .replace(/%/g, '%25')
+        .replace(/\r/g, '%0D')
+        .replace(/\n/g, '%0A');
+}
+function escapeProperty(s) {
+    return (s || '')
+        .replace(/%/g, '%25')
+        .replace(/\r/g, '%0D')
+        .replace(/\n/g, '%0A')
+        .replace(/:/g, '%3A')
+        .replace(/,/g, '%2C');
+}
+//# sourceMappingURL=command.js.map
+
+/***/ }),
+
+/***/ 25:
+/***/ (function(module, __unusedexports, __webpack_require__) {
+
+// Unique ID creation requires a high quality random # generator.  In node.js
+// this is pretty straight-forward - we use the crypto API.
+
+var crypto = __webpack_require__(417);
+
+module.exports = function nodeRNG() {
+  return crypto.randomBytes(16);
+};
+
+
+/***/ }),
+
+/***/ 87:
+/***/ (function(module) {
+
+module.exports = require("os");
+
+/***/ }),
+
+/***/ 129:
+/***/ (function(module) {
+
+module.exports = require("child_process");
+
+/***/ }),
+
+/***/ 160:
+/***/ (function(__unusedmodule, exports, __webpack_require__) {
+
+"use strict";
+
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+const fs_1 = __importDefault(__webpack_require__(747));
+class DatabaseDriver {
+    constructor(basedir) {
+        this.dirty = false;
+        if (!fs_1.default.existsSync(`./${basedir}`)) {
+            fs_1.default.mkdirSync(`./${basedir}`, { recursive: true });
+        }
+        this.basedir = `./${basedir}`;
+    }
+    dropTable(tablename) {
+        const filename = this.getTableFile(tablename);
+        if (fs_1.default.existsSync(filename)) {
+            fs_1.default.unlinkSync(filename);
+        }
+    }
+    readTable(tablename) {
+        const filename = this.getTableFile(tablename);
+        if (fs_1.default.existsSync(filename)) {
+            return JSON.parse(fs_1.default.readFileSync(filename, 'utf8'));
+        }
+        return [];
+    }
+    flushTable(tablename, tableData) {
+        const tableFile = this.getTableFile(tablename);
+        fs_1.default.writeFileSync(tableFile, JSON.stringify(tableData, null, 2));
+        this.dirty = true;
+    }
+    getTableFile(tablename) {
+        return `${this.basedir}/${tablename}.json`;
+    }
+}
+exports.DatabaseDriver = DatabaseDriver;
+
+
+/***/ }),
+
+/***/ 223:
 /***/ (function(__unusedmodule, exports) {
 
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.init = () => ({
-    error: false,
-    result: {
-        DELETE: 'DELETE',
-        FINDMANY: 'FINDMANY',
-        INIT: 'INIT',
-        UPSERT: 'UPSERT',
-        FINDONE: 'FINDONE',
-        DELETEONE: 'DELETEONE',
-        DELETEMANY: 'DELETEMANY',
-        UPDATEONE: 'UPDATEONE',
-        UPDATEMANY: 'UPDATEMANY',
-        DROPTABLE: 'DROPTABLE'
-    }
-});
+const requiredParametersForOperation = {
+    INIT: [],
+    DELETEONE: ['table', 'query'],
+    DELETEMANY: ['table', 'query'],
+    FINDONE: ['table', 'query'],
+    FINDMANY: ['table', 'query'],
+    UPSERT: ['table', 'record'],
+    UPDATEONE: ['table', 'record', 'query'],
+    UPDATEMANY: ['table', 'record', 'query'],
+    DROPTABLE: ['table']
+};
+function missingParameters(config, requiredParameters) {
+    const missing = requiredParameters
+        .map(p => (config[p] ? null : p))
+        .filter(notEmpty);
+    return missing.length > 0 ? missing : false;
+}
+exports.missingParameters = missingParameters;
+function notEmpty(value) {
+    return value !== null && value !== undefined;
+}
+function resolveRequiredParameters(config) {
+    const missingKeys = missingParameters(config, requiredParametersForOperation[config.operation]);
+    return missingKeys
+        ? { valid: false, missingKeys, config: null }
+        : { valid: true, missingKeys: null, config };
+}
+exports.resolveRequiredParameters = resolveRequiredParameters;
 
 
 /***/ }),
 
-/***/ 82:
+/***/ 295:
 /***/ (function(__unusedmodule, exports) {
 
 "use strict";
@@ -88,11 +260,11 @@ exports.drop = (config, db) => {
 
 /***/ }),
 
-/***/ 86:
+/***/ 363:
 /***/ (function(module, __unusedexports, __webpack_require__) {
 
-var rng = __webpack_require__(139);
-var bytesToUuid = __webpack_require__(722);
+var rng = __webpack_require__(25);
+var bytesToUuid = __webpack_require__(823);
 
 // **`v1()` - Generate time-based UUID**
 //
@@ -204,36 +376,60 @@ module.exports = v1;
 
 /***/ }),
 
-/***/ 87:
+/***/ 417:
 /***/ (function(module) {
 
-module.exports = require("os");
+module.exports = require("crypto");
 
 /***/ }),
 
-/***/ 129:
-/***/ (function(module) {
+/***/ 438:
+/***/ (function(__unusedmodule, exports, __webpack_require__) {
 
-module.exports = require("child_process");
+"use strict";
 
-/***/ }),
-
-/***/ 139:
-/***/ (function(module, __unusedexports, __webpack_require__) {
-
-// Unique ID creation requires a high quality random # generator.  In node.js
-// this is pretty straight-forward - we use the crypto API.
-
-var crypto = __webpack_require__(417);
-
-module.exports = function nodeRNG() {
-  return crypto.randomBytes(16);
+Object.defineProperty(exports, "__esModule", { value: true });
+const init_1 = __webpack_require__(893);
+const upsert_1 = __webpack_require__(922);
+const find_1 = __webpack_require__(815);
+const update_1 = __webpack_require__(651);
+const delete_1 = __webpack_require__(915);
+const droptable_1 = __webpack_require__(295);
+const Operations = {
+    INIT: init_1.init,
+    DELETEONE: delete_1.deleteRecords,
+    DELETEMANY: delete_1.deleteRecords,
+    DROPTABLE: droptable_1.drop,
+    FINDONE: find_1.find,
+    FINDMANY: find_1.find,
+    UPSERT: upsert_1.upsert,
+    UPDATEMANY: update_1.update,
+    UPDATEONE: update_1.update
 };
+exports.default = Operations;
 
 
 /***/ }),
 
-/***/ 198:
+/***/ 453:
+/***/ (function(__unusedmodule, exports) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+function createQueryFilter(query) {
+    return (value) => {
+        return Object.keys(query)
+            .map(key => value[key] === query[key])
+            .reduce((prev, current) => prev && current, true);
+    };
+}
+exports.createQueryFilter = createQueryFilter;
+
+
+/***/ }),
+
+/***/ 462:
 /***/ (function(__unusedmodule, exports, __webpack_require__) {
 
 "use strict";
@@ -258,12 +454,12 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const core = __importStar(__webpack_require__(470));
+const core = __importStar(__webpack_require__(961));
 const path_1 = __importDefault(__webpack_require__(622));
-const parameters_1 = __webpack_require__(597);
-const operations_1 = __importDefault(__webpack_require__(839));
-const db_driver_1 = __webpack_require__(842);
-const commit_1 = __webpack_require__(671);
+const parameters_1 = __webpack_require__(223);
+const operations_1 = __importDefault(__webpack_require__(438));
+const db_driver_1 = __webpack_require__(160);
+const commit_1 = __webpack_require__(520);
 function run() {
     var _a;
     return __awaiter(this, void 0, void 0, function* () {
@@ -276,7 +472,8 @@ function run() {
             table: core.getInput('table'),
             record: core.getInput('record'),
             basedir: core.getInput('basedir') || 'db',
-            query: core.getInput('query')
+            query: core.getInput('query'),
+            tables: core.getInput('tables')
         });
         core.info(`Basedir: ${path_1.default.resolve('./' + ((_a = parsedConfig.config) === null || _a === void 0 ? void 0 : _a.basedir))}`);
         if (!parsedConfig.valid) {
@@ -297,13 +494,224 @@ run();
 
 /***/ }),
 
-/***/ 211:
+/***/ 520:
+/***/ (function(__unusedmodule, exports, __webpack_require__) {
+
+"use strict";
+
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+const child_process_1 = __webpack_require__(129);
+const path_1 = __importDefault(__webpack_require__(622));
+const exec = (cmd, args = []) => __awaiter(void 0, void 0, void 0, function* () {
+    return new Promise((resolve, reject) => {
+        // console.log(`Started: ${cmd} ${args.join(' ')}`)
+        const app = child_process_1.spawn(cmd, args, { stdio: 'inherit' });
+        app.on('close', (code) => {
+            if (code !== 0) {
+                const err = new Error(`Invalid status code: ${code}`);
+                err.code = code;
+                return reject(err);
+            }
+            return resolve(code);
+        });
+        app.on('error', reject);
+    });
+});
+exports.commit = () => __awaiter(void 0, void 0, void 0, function* () {
+    yield exec('bash', [path_1.default.join(__dirname, './start.sh')]);
+});
+
+
+/***/ }),
+
+/***/ 622:
+/***/ (function(module) {
+
+module.exports = require("path");
+
+/***/ }),
+
+/***/ 651:
 /***/ (function(__unusedmodule, exports, __webpack_require__) {
 
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-const createQueryFilter_1 = __webpack_require__(657);
+const createQueryFilter_1 = __webpack_require__(453);
+exports.update = (config, db) => {
+    const table = config.table;
+    const query = JSON.parse(config.query);
+    const updatePartial = JSON.parse(config.record);
+    const operation = config.operation;
+    let data = db.readTable(table);
+    const queryFilter = createQueryFilter_1.createQueryFilter(query);
+    const candidates = data.filter(queryFilter).map(rec => rec._id);
+    const recordsToUpdate = operation === 'UPDATEMANY'
+        ? candidates
+        : candidates.length > 0
+            ? [candidates[0]]
+            : [];
+    data = data.map(rec => recordsToUpdate.includes(rec._id) ? Object.assign(Object.assign({}, rec), updatePartial) : rec);
+    db.flushTable(table, data);
+    return {
+        error: null,
+        result: {
+            updatedCount: recordsToUpdate.length,
+            updatedRecordIds: recordsToUpdate
+        }
+    };
+};
+
+
+/***/ }),
+
+/***/ 747:
+/***/ (function(module) {
+
+module.exports = require("fs");
+
+/***/ }),
+
+/***/ 815:
+/***/ (function(__unusedmodule, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+const createQueryFilter_1 = __webpack_require__(453);
+exports.find = (config, db) => {
+    const table = config.table;
+    const query = JSON.parse(config.query || '{}');
+    const operation = config.operation;
+    const data = db.readTable(table);
+    const queryFilter = createQueryFilter_1.createQueryFilter(query);
+    const results = data.filter(queryFilter);
+    switch (operation) {
+        case 'FINDMANY': {
+            return {
+                result: {
+                    found: results.length > 0,
+                    count: results.length,
+                    records: results
+                },
+                error: null
+            };
+        }
+        case 'FINDONE': {
+            return {
+                result: {
+                    found: results.length > 0,
+                    count: results.length,
+                    record: results.length > 0 ? results[0] : {}
+                },
+                error: null
+            };
+        }
+    }
+};
+
+
+/***/ }),
+
+/***/ 823:
+/***/ (function(module) {
+
+/**
+ * Convert array of 16 byte values to UUID string format of the form:
+ * XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX
+ */
+var byteToHex = [];
+for (var i = 0; i < 256; ++i) {
+  byteToHex[i] = (i + 0x100).toString(16).substr(1);
+}
+
+function bytesToUuid(buf, offset) {
+  var i = offset || 0;
+  var bth = byteToHex;
+  // join used to fix memory issue caused by concatenation: https://bugs.chromium.org/p/v8/issues/detail?id=3175#c4
+  return ([
+    bth[buf[i++]], bth[buf[i++]],
+    bth[buf[i++]], bth[buf[i++]], '-',
+    bth[buf[i++]], bth[buf[i++]], '-',
+    bth[buf[i++]], bth[buf[i++]], '-',
+    bth[buf[i++]], bth[buf[i++]], '-',
+    bth[buf[i++]], bth[buf[i++]],
+    bth[buf[i++]], bth[buf[i++]],
+    bth[buf[i++]], bth[buf[i++]]
+  ]).join('');
+}
+
+module.exports = bytesToUuid;
+
+
+/***/ }),
+
+/***/ 831:
+/***/ (function(module, __unusedexports, __webpack_require__) {
+
+var v1 = __webpack_require__(363);
+var v4 = __webpack_require__(993);
+
+var uuid = v4;
+uuid.v1 = v1;
+uuid.v4 = v4;
+
+module.exports = uuid;
+
+
+/***/ }),
+
+/***/ 893:
+/***/ (function(__unusedmodule, exports) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.init = (config) => {
+    var _a;
+    const tables = ((_a = config.tables) === null || _a === void 0 ? void 0 : _a.split(',').map(s => s.trim()).reduce((prev, current) => (Object.assign(Object.assign({}, prev), { [current]: current })), {})) || {};
+    return {
+        error: false,
+        result: {
+            operations: {
+                DELETE: 'DELETE',
+                FINDMANY: 'FINDMANY',
+                INIT: 'INIT',
+                UPSERT: 'UPSERT',
+                FINDONE: 'FINDONE',
+                DELETEONE: 'DELETEONE',
+                DELETEMANY: 'DELETEMANY',
+                UPDATEONE: 'UPDATEONE',
+                UPDATEMANY: 'UPDATEMANY',
+                DROPTABLE: 'DROPTABLE'
+            },
+            tables
+        }
+    };
+};
+
+
+/***/ }),
+
+/***/ 915:
+/***/ (function(__unusedmodule, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+const createQueryFilter_1 = __webpack_require__(453);
 exports.deleteRecords = (config, db) => {
     const table = config.table;
     const query = JSON.parse(config.query);
@@ -330,87 +738,72 @@ exports.deleteRecords = (config, db) => {
 
 /***/ }),
 
-/***/ 417:
-/***/ (function(module) {
-
-module.exports = require("crypto");
-
-/***/ }),
-
-/***/ 431:
+/***/ 922:
 /***/ (function(__unusedmodule, exports, __webpack_require__) {
 
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-const os = __webpack_require__(87);
+const uuid_1 = __webpack_require__(831);
+const createQueryFilter_1 = __webpack_require__(453);
 /**
- * Commands
+ * Will insert a new record if no existing match is found.
+ * Will match on _id, unless a query is specified - in which it
+ * will update the first match, or insert a new record.
  *
- * Command Format:
- *   ##[name key=value;key=value]message
- *
- * Examples:
- *   ##[warning]This is the user warning message
- *   ##[set-secret name=mypassword]definitelyNotAPassword!
  */
-function issueCommand(command, properties, message) {
-    const cmd = new Command(command, properties, message);
-    process.stdout.write(cmd.toString() + os.EOL);
-}
-exports.issueCommand = issueCommand;
-function issue(name, message = '') {
-    issueCommand(name, {}, message);
-}
-exports.issue = issue;
-const CMD_STRING = '::';
-class Command {
-    constructor(command, properties, message) {
-        if (!command) {
-            command = 'missing.command';
-        }
-        this.command = command;
-        this.properties = properties;
-        this.message = message;
+exports.upsert = (config, db) => {
+    const { table: tablename, record } = config;
+    let jsonRecord;
+    try {
+        jsonRecord = JSON.parse(record);
     }
-    toString() {
-        let cmdStr = CMD_STRING + this.command;
-        if (this.properties && Object.keys(this.properties).length > 0) {
-            cmdStr += ' ';
-            for (const key in this.properties) {
-                if (this.properties.hasOwnProperty(key)) {
-                    const val = this.properties[key];
-                    if (val) {
-                        // safely append the val - avoid blowing up when attempting to
-                        // call .replace() if message is not a string for some reason
-                        cmdStr += `${key}=${escape(`${val || ''}`)},`;
-                    }
-                }
-            }
-        }
-        cmdStr += CMD_STRING;
-        // safely append the message - avoid blowing up when attempting to
-        // call .replace() if message is not a string for some reason
-        const message = `${this.message || ''}`;
-        cmdStr += escapeData(message);
-        return cmdStr;
+    catch (e) {
+        return {
+            error: `Could not parse record to JSON: ${e.message}`,
+            result: null
+        };
     }
+    const query = config.query && config.query !== '' ? JSON.parse(config.query) : undefined;
+    const queryFilter = query
+        ? createQueryFilter_1.createQueryFilter(query)
+        : createQueryFilter_1.createQueryFilter({ _id: jsonRecord._id });
+    let table = db.readTable(tablename);
+    let newRecord;
+    const result = {};
+    if (!jsonRecord._id && !query) {
+        newRecord = createNewRecord(jsonRecord);
+        table.push(newRecord);
+    }
+    else {
+        const existingRecord = table.filter(queryFilter);
+        if (existingRecord.length === 0) {
+            newRecord = createNewRecord(jsonRecord);
+            table.push(newRecord);
+            result.new = true;
+            result.update = false;
+        }
+        else {
+            newRecord = Object.assign(Object.assign({}, jsonRecord), { _updated: new Date().toString() });
+            table = table.map(rec => rec._id === existingRecord[0]._id ? newRecord : rec);
+            result.update = true;
+            result.new = false;
+        }
+    }
+    db.flushTable(tablename, table);
+    return {
+        error: null,
+        result: newRecord
+    };
+};
+function createNewRecord(jsonRecord) {
+    return Object.assign(Object.assign({}, jsonRecord), { _updated: new Date().toString(), _id: uuid_1.v4() });
 }
-function escapeData(s) {
-    return s.replace(/\r/g, '%0D').replace(/\n/g, '%0A');
-}
-function escape(s) {
-    return s
-        .replace(/\r/g, '%0D')
-        .replace(/\n/g, '%0A')
-        .replace(/]/g, '%5D')
-        .replace(/;/g, '%3B');
-}
-//# sourceMappingURL=command.js.map
+
 
 /***/ }),
 
-/***/ 470:
+/***/ 961:
 /***/ (function(__unusedmodule, exports, __webpack_require__) {
 
 "use strict";
@@ -424,10 +817,17 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (Object.hasOwnProperty.call(mod, k)) result[k] = mod[k];
+    result["default"] = mod;
+    return result;
+};
 Object.defineProperty(exports, "__esModule", { value: true });
-const command_1 = __webpack_require__(431);
-const os = __webpack_require__(87);
-const path = __webpack_require__(622);
+const command_1 = __webpack_require__(19);
+const os = __importStar(__webpack_require__(87));
+const path = __importStar(__webpack_require__(622));
 /**
  * The code to exit an action
  */
@@ -612,231 +1012,11 @@ exports.getState = getState;
 
 /***/ }),
 
-/***/ 597:
-/***/ (function(__unusedmodule, exports) {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", { value: true });
-const requiredParametersForOperation = {
-    INIT: [],
-    DELETEONE: ['table', 'query'],
-    DELETEMANY: ['table', 'query'],
-    FINDONE: ['table', 'query'],
-    FINDMANY: ['table', 'query'],
-    UPSERT: ['table', 'record'],
-    UPDATEONE: ['table', 'record', 'query'],
-    UPDATEMANY: ['table', 'record', 'query'],
-    DROPTABLE: ['table']
-};
-function missingParameters(config, requiredParameters) {
-    const missing = requiredParameters
-        .map(p => (config[p] ? null : p))
-        .filter(notEmpty);
-    return missing.length > 0 ? missing : false;
-}
-exports.missingParameters = missingParameters;
-function notEmpty(value) {
-    return value !== null && value !== undefined;
-}
-function resolveRequiredParameters(config) {
-    const missingKeys = missingParameters(config, requiredParametersForOperation[config.operation]);
-    return missingKeys
-        ? { valid: false, missingKeys, config: null }
-        : { valid: true, missingKeys: null, config };
-}
-exports.resolveRequiredParameters = resolveRequiredParameters;
-
-
-/***/ }),
-
-/***/ 622:
-/***/ (function(module) {
-
-module.exports = require("path");
-
-/***/ }),
-
-/***/ 657:
-/***/ (function(__unusedmodule, exports) {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", { value: true });
-function createQueryFilter(query) {
-    return (value) => {
-        return Object.keys(query)
-            .map(key => value[key] === query[key])
-            .reduce((prev, current) => prev && current, true);
-    };
-}
-exports.createQueryFilter = createQueryFilter;
-
-
-/***/ }),
-
-/***/ 671:
-/***/ (function(__unusedmodule, exports, __webpack_require__) {
-
-"use strict";
-
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-const child_process_1 = __webpack_require__(129);
-const path_1 = __importDefault(__webpack_require__(622));
-const exec = (cmd, args = []) => __awaiter(void 0, void 0, void 0, function* () {
-    return new Promise((resolve, reject) => {
-        // console.log(`Started: ${cmd} ${args.join(' ')}`)
-        const app = child_process_1.spawn(cmd, args, { stdio: 'inherit' });
-        app.on('close', (code) => {
-            if (code !== 0) {
-                const err = new Error(`Invalid status code: ${code}`);
-                err.code = code;
-                return reject(err);
-            }
-            return resolve(code);
-        });
-        app.on('error', reject);
-    });
-});
-exports.commit = () => __awaiter(void 0, void 0, void 0, function* () {
-    yield exec('bash', [path_1.default.join(__dirname, './start.sh')]);
-});
-
-
-/***/ }),
-
-/***/ 674:
-/***/ (function(__unusedmodule, exports, __webpack_require__) {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", { value: true });
-const createQueryFilter_1 = __webpack_require__(657);
-exports.find = (config, db) => {
-    const table = config.table;
-    const query = JSON.parse(config.query || '{}');
-    const operation = config.operation;
-    const data = db.readTable(table);
-    const queryFilter = createQueryFilter_1.createQueryFilter(query);
-    const results = data.filter(queryFilter);
-    switch (operation) {
-        case 'FINDMANY': {
-            return {
-                result: {
-                    found: results.length > 0,
-                    count: results.length,
-                    records: results
-                },
-                error: null
-            };
-        }
-        case 'FINDONE': {
-            return {
-                result: {
-                    found: results.length > 0,
-                    count: results.length,
-                    record: results.length > 0 ? results[0] : {}
-                },
-                error: null
-            };
-        }
-    }
-};
-
-
-/***/ }),
-
-/***/ 722:
-/***/ (function(module) {
-
-/**
- * Convert array of 16 byte values to UUID string format of the form:
- * XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX
- */
-var byteToHex = [];
-for (var i = 0; i < 256; ++i) {
-  byteToHex[i] = (i + 0x100).toString(16).substr(1);
-}
-
-function bytesToUuid(buf, offset) {
-  var i = offset || 0;
-  var bth = byteToHex;
-  // join used to fix memory issue caused by concatenation: https://bugs.chromium.org/p/v8/issues/detail?id=3175#c4
-  return ([
-    bth[buf[i++]], bth[buf[i++]],
-    bth[buf[i++]], bth[buf[i++]], '-',
-    bth[buf[i++]], bth[buf[i++]], '-',
-    bth[buf[i++]], bth[buf[i++]], '-',
-    bth[buf[i++]], bth[buf[i++]], '-',
-    bth[buf[i++]], bth[buf[i++]],
-    bth[buf[i++]], bth[buf[i++]],
-    bth[buf[i++]], bth[buf[i++]]
-  ]).join('');
-}
-
-module.exports = bytesToUuid;
-
-
-/***/ }),
-
-/***/ 747:
-/***/ (function(module) {
-
-module.exports = require("fs");
-
-/***/ }),
-
-/***/ 800:
-/***/ (function(__unusedmodule, exports, __webpack_require__) {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", { value: true });
-const createQueryFilter_1 = __webpack_require__(657);
-exports.update = (config, db) => {
-    const table = config.table;
-    const query = JSON.parse(config.query);
-    const updatePartial = JSON.parse(config.record);
-    const operation = config.operation;
-    let data = db.readTable(table);
-    const queryFilter = createQueryFilter_1.createQueryFilter(query);
-    const candidates = data.filter(queryFilter).map(rec => rec._id);
-    const recordsToUpdate = operation === 'UPDATEMANY'
-        ? candidates
-        : candidates.length > 0
-            ? [candidates[0]]
-            : [];
-    data = data.map(rec => recordsToUpdate.includes(rec._id) ? Object.assign(Object.assign({}, rec), updatePartial) : rec);
-    db.flushTable(table, data);
-    return {
-        error: null,
-        result: {
-            updatedCount: recordsToUpdate.length,
-            updatedRecordIds: recordsToUpdate
-        }
-    };
-};
-
-
-/***/ }),
-
-/***/ 826:
+/***/ 993:
 /***/ (function(module, __unusedexports, __webpack_require__) {
 
-var rng = __webpack_require__(139);
-var bytesToUuid = __webpack_require__(722);
+var rng = __webpack_require__(25);
+var bytesToUuid = __webpack_require__(823);
 
 function v4(options, buf, offset) {
   var i = buf && offset || 0;
@@ -864,159 +1044,6 @@ function v4(options, buf, offset) {
 }
 
 module.exports = v4;
-
-
-/***/ }),
-
-/***/ 839:
-/***/ (function(__unusedmodule, exports, __webpack_require__) {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", { value: true });
-const init_1 = __webpack_require__(19);
-const upsert_1 = __webpack_require__(900);
-const find_1 = __webpack_require__(674);
-const update_1 = __webpack_require__(800);
-const delete_1 = __webpack_require__(211);
-const droptable_1 = __webpack_require__(82);
-const Operations = {
-    INIT: init_1.init,
-    DELETEONE: delete_1.deleteRecords,
-    DELETEMANY: delete_1.deleteRecords,
-    DROPTABLE: droptable_1.drop,
-    FINDONE: find_1.find,
-    FINDMANY: find_1.find,
-    UPSERT: upsert_1.upsert,
-    UPDATEMANY: update_1.update,
-    UPDATEONE: update_1.update
-};
-exports.default = Operations;
-
-
-/***/ }),
-
-/***/ 842:
-/***/ (function(__unusedmodule, exports, __webpack_require__) {
-
-"use strict";
-
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-const fs_1 = __importDefault(__webpack_require__(747));
-class DatabaseDriver {
-    constructor(basedir) {
-        this.dirty = false;
-        if (!fs_1.default.existsSync(`./${basedir}`)) {
-            fs_1.default.mkdirSync(`./${basedir}`, { recursive: true });
-        }
-        this.basedir = `./${basedir}`;
-    }
-    dropTable(tablename) {
-        const filename = this.getTableFile(tablename);
-        if (fs_1.default.existsSync(filename)) {
-            fs_1.default.unlinkSync(filename);
-        }
-    }
-    readTable(tablename) {
-        const filename = this.getTableFile(tablename);
-        if (fs_1.default.existsSync(filename)) {
-            return JSON.parse(fs_1.default.readFileSync(filename, 'utf8'));
-        }
-        return [];
-    }
-    flushTable(tablename, tableData) {
-        const tableFile = this.getTableFile(tablename);
-        fs_1.default.writeFileSync(tableFile, JSON.stringify(tableData, null, 2));
-        this.dirty = true;
-    }
-    getTableFile(tablename) {
-        return `${this.basedir}/${tablename}.json`;
-    }
-}
-exports.DatabaseDriver = DatabaseDriver;
-
-
-/***/ }),
-
-/***/ 898:
-/***/ (function(module, __unusedexports, __webpack_require__) {
-
-var v1 = __webpack_require__(86);
-var v4 = __webpack_require__(826);
-
-var uuid = v4;
-uuid.v1 = v1;
-uuid.v4 = v4;
-
-module.exports = uuid;
-
-
-/***/ }),
-
-/***/ 900:
-/***/ (function(__unusedmodule, exports, __webpack_require__) {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", { value: true });
-const uuid_1 = __webpack_require__(898);
-const createQueryFilter_1 = __webpack_require__(657);
-/**
- * Will insert a new record if no existing match is found.
- * Will match on _id, unless a query is specified - in which it
- * will update the first match, or insert a new record.
- *
- */
-exports.upsert = (config, db) => {
-    const { table: tablename, record } = config;
-    let jsonRecord;
-    try {
-        jsonRecord = JSON.parse(record);
-    }
-    catch (e) {
-        return {
-            error: `Could not parse record to JSON: ${e.message}`,
-            result: null
-        };
-    }
-    const query = config.query && config.query !== '' ? JSON.parse(config.query) : undefined;
-    const queryFilter = query
-        ? createQueryFilter_1.createQueryFilter(query)
-        : createQueryFilter_1.createQueryFilter({ _id: jsonRecord._id });
-    let table = db.readTable(tablename);
-    let newRecord;
-    const result = {};
-    if (!jsonRecord._id && !query) {
-        newRecord = createNewRecord(jsonRecord);
-        table.push(newRecord);
-    }
-    else {
-        const existingRecord = table.filter(queryFilter);
-        if (existingRecord.length === 0) {
-            newRecord = createNewRecord(jsonRecord);
-            table.push(newRecord);
-            result.new = true;
-            result.update = false;
-        }
-        else {
-            newRecord = Object.assign(Object.assign({}, jsonRecord), { _updated: new Date().toString() });
-            table = table.map(rec => rec._id === existingRecord[0]._id ? newRecord : rec);
-            result.update = true;
-            result.new = false;
-        }
-    }
-    db.flushTable(tablename, table);
-    return {
-        error: null,
-        result: newRecord
-    };
-};
-function createNewRecord(jsonRecord) {
-    return Object.assign(Object.assign({}, jsonRecord), { _updated: new Date().toString(), _id: uuid_1.v4() });
-}
 
 
 /***/ })

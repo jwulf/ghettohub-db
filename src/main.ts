@@ -22,6 +22,7 @@ export interface GhettoDBOperationWithParameters {
   record?: string
   basedir?: string
   query?: string
+  tables?: string
 }
 
 async function run(): Promise<void> {
@@ -34,7 +35,8 @@ async function run(): Promise<void> {
     table: core.getInput('table'),
     record: core.getInput('record'),
     basedir: core.getInput('basedir') || 'db',
-    query: core.getInput('query')
+    query: core.getInput('query'),
+    tables: core.getInput('tables')
   })
 
   core.info(`Basedir: ${path.resolve('./' + parsedConfig.config?.basedir)}`)

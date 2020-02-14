@@ -21,6 +21,9 @@ inputs:
     required: false
     description: "The base directory for the database"
     default: "db"
+  tables:
+    required: false
+    description: "A list of tablenames to initialise a database"
 runs:
   using: 'node12'
   main: 'dist/index.js'
