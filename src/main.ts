@@ -1,5 +1,5 @@
 import * as core from '@actions/core'
-
+import path from 'path'
 import {resolveRequiredParameters} from './parameters'
 import Operations from './operations'
 import {DatabaseDriver} from './operations/db-driver'
@@ -36,6 +36,9 @@ async function run(): Promise<void> {
     basedir: core.getInput('basedir') || 'db',
     query: core.getInput('query')
   })
+
+  core.info(`Basedir: ${path.resolve('./' + parsedConfig.config?.basedir)}`)
+
   if (!parsedConfig.valid) {
     return core.setFailed(
       `Missing required configuration keys for operation ${operation}: ${JSON.stringify(
