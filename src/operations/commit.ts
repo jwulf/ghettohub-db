@@ -1,9 +1,9 @@
-const spawn = require('child_process').spawn
-const path = require('path')
+import {spawn} from 'child_process'
+import path from 'path'
 
-const exec = (cmd: string, args: string[] = []) =>
+const exec = async (cmd: string, args: string[] = []): Promise<number> =>
   new Promise((resolve, reject) => {
-    console.log(`Started: ${cmd} ${args.join(' ')}`)
+    // console.log(`Started: ${cmd} ${args.join(' ')}`)
     const app = spawn(cmd, args, {stdio: 'inherit'})
     app.on('close', (code: number) => {
       if (code !== 0) {
@@ -16,6 +16,6 @@ const exec = (cmd: string, args: string[] = []) =>
     app.on('error', reject)
   })
 
-export const commit = async () => {
+export const commit = async (): Promise<void> => {
   await exec('bash', [path.join(__dirname, './start.sh')])
 }

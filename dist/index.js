@@ -150,6 +150,13 @@ module.exports = require("os");
 
 /***/ }),
 
+/***/ 129:
+/***/ (function(module) {
+
+module.exports = require("child_process");
+
+/***/ }),
+
 /***/ 160:
 /***/ (function(__unusedmodule, exports, __webpack_require__) {
 
@@ -162,6 +169,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const fs_1 = __importDefault(__webpack_require__(747));
 class DatabaseDriver {
     constructor(basedir) {
+        this.dirty = false;
         if (!fs_1.default.existsSync(`./${basedir}`)) {
             fs_1.default.mkdirSync(`./${basedir}`, { recursive: true });
         }
@@ -183,6 +191,7 @@ class DatabaseDriver {
     flushTable(tablename, tableData) {
         const tableFile = this.getTableFile(tablename);
         fs_1.default.writeFileSync(tableFile, JSON.stringify(tableData, null, 2));
+        this.dirty = true;
     }
     getTableFile(tablename) {
         return `${this.basedir}/${tablename}.json`;
@@ -449,11 +458,13 @@ const core = __importStar(__webpack_require__(961));
 const parameters_1 = __webpack_require__(223);
 const operations_1 = __importDefault(__webpack_require__(438));
 const db_driver_1 = __webpack_require__(160);
+const commit_1 = __webpack_require__(520);
 function run() {
     return __awaiter(this, void 0, void 0, function* () {
         const operation = core.getInput('operation', {
             required: true
         });
+        core.info(`Running ${operation} operation`);
         const parsedConfig = parameters_1.resolveRequiredParameters({
             operation,
             table: core.getInput('table'),
@@ -465,17 +476,55 @@ function run() {
             return core.setFailed(`Missing required configuration keys for operation ${operation}: ${JSON.stringify(parsedConfig.missingKeys)}`);
         }
         const db = new db_driver_1.DatabaseDriver(parsedConfig.config.basedir);
-        const operationResult = yield operations_1.default[parsedConfig.config.operation](parsedConfig.config, db);
-        if (operationResult.result) {
-            core.info(JSON.stringify(operationResult.result));
-            core.setOutput('result', JSON.stringify(operationResult.result));
-        }
-        if (operationResult.error) {
-            core.setOutput('error', JSON.stringify(operationResult.error));
-        }
+        const operationResult = operations_1.default[parsedConfig.config.operation](parsedConfig.config, db);
+        core.info(JSON.stringify(operationResult.result));
+        core.setOutput('result', JSON.stringify(operationResult.result));
+        yield commit_1.commit();
     });
 }
 run();
+
+
+/***/ }),
+
+/***/ 520:
+/***/ (function(__unusedmodule, exports, __webpack_require__) {
+
+"use strict";
+
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+const child_process_1 = __webpack_require__(129);
+const path_1 = __importDefault(__webpack_require__(622));
+const exec = (cmd, args = []) => __awaiter(void 0, void 0, void 0, function* () {
+    return new Promise((resolve, reject) => {
+        // console.log(`Started: ${cmd} ${args.join(' ')}`)
+        const app = child_process_1.spawn(cmd, args, { stdio: 'inherit' });
+        app.on('close', (code) => {
+            if (code !== 0) {
+                const err = new Error(`Invalid status code: ${code}`);
+                err.code = code;
+                return reject(err);
+            }
+            return resolve(code);
+        });
+        app.on('error', reject);
+    });
+});
+exports.commit = () => __awaiter(void 0, void 0, void 0, function* () {
+    yield exec('bash', [path_1.default.join(__dirname, './start.sh')]);
+});
 
 
 /***/ }),
@@ -707,6 +756,7 @@ exports.upsert = (config, db) => {
         : createQueryFilter_1.createQueryFilter({ _id: jsonRecord._id });
     let table = db.readTable(tablename);
     let newRecord;
+    const result = {};
     if (!jsonRecord._id && !query) {
         newRecord = createNewRecord(jsonRecord);
         table.push(newRecord);
@@ -716,10 +766,14 @@ exports.upsert = (config, db) => {
         if (existingRecord.length === 0) {
             newRecord = createNewRecord(jsonRecord);
             table.push(newRecord);
+            result.new = true;
+            result.update = false;
         }
         else {
             newRecord = Object.assign(Object.assign({}, jsonRecord), { _updated: new Date().toString() });
             table = table.map(rec => rec._id === existingRecord[0]._id ? newRecord : rec);
+            result.update = true;
+            result.new = false;
         }
     }
     db.flushTable(tablename, table);
