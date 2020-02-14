@@ -8,23 +8,25 @@
 
 With this GitHub Action you can use a GitHub repo as an extremely low-fi JSON DB.
 
-The action will perform db operations on JSON data stored as flat files (one file per table). At the end of the workflow you should use [stefanzweifel/git-auto-commit-action](https://github.com/stefanzweifel/git-auto-commit-action) to commit the database transaction to the repo.
+The action will perform db operations on JSON data stored as flat files (one file per table).
 
-It doesn't handle file conflicts yet, so simultaneous workflows will cause operations to fail.
+It doesn't handle git merge conflicts yet, so simultaneous workflows may cause operations to fail.
 
 ## Use
 
 Supported operations:
 
-* FINDONE 
-* FINDMANY 
-* DROPTABLE 
-* UPSERT 
-* DELETEONE 
-* DELETEMANY 
-* INIT 
-* UPDATEONE 
-* UPDATEMANY
+| Operation | Required parameters | Optional parameters |
+| --- | ---| --- |
+| FINDONE | operation, table, query | |
+| FINDMANY | operation, table, query | |
+| DROPTABLE | operation, table, github_token | |
+| UPSERT  | operation, table, record, github_token | query |
+| DELETEONE | operation, table, query, github_token | |
+| DELETEMANY | operation, table, query, github_token | |
+| INIT  | operation  | |
+| UPDATEONE   |operation, table, query, record, github_token | |
+| UPDATEMANY  |operation, table, query, record, github_token | |
 
 * Upsert a new record:
 
@@ -47,6 +49,12 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           record: '{"name": "Joe Bloggs", "address": "The Dog House"}'
           table: customers
+```
+
+Example output: 
+
+```
+{"name":"Joe Bloggs","address":"The Dog House","_updated":"Fri Feb 14 2020 12:27:53 GMT+0000 (Coordinated Universal Time)","_id":"80256a29-9b7f-458a-a781-5d9ae7077d0d"}
 ```
 
 * Find a record:
