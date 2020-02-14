@@ -1,5 +1,5 @@
 #!/bin/sh
-set -e
+# set -e
 
 INPUT_BRANCH=${INPUT_BRANCH:-master}
 INPUT_FORCE=${INPUT_FORCE:-false}
@@ -26,7 +26,7 @@ cd ${INPUT_DIRECTORY}
 
 git config --local user.email "action@github.com"
 git config --local user.name "GhettoHubDB GitHub Action"
-pwd
+echo `pwd`
 git status
 git add .
 git commit -m "Database commit"

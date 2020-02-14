@@ -55,7 +55,10 @@ async function run(): Promise<void> {
 
   core.info(JSON.stringify(operationResult.result))
   core.setOutput('result', JSON.stringify(operationResult.result))
-  await commit()
+  if (db.dirty) {
+    core.info('Committing changes...')
+    await commit()
+  }
 }
 
 run()
