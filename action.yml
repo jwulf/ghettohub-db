@@ -2,9 +2,12 @@ name: 'ghettohubDB'
 description: 'A database driver for a JSON DB in a GitHub repo'
 author: 'Josh Wulf <josh@magikcraft.io>'
 inputs:
+  github_token: 
+    required: true
+    description: "A GitHub token to commit to the repo. Pass in secrets.GITHUB_TOKEN."
   operation:    
     required: true         
-    description: 'The operation to perform: FIND | UPSERT | DELETE | INIT'
+    description: 'The operation to perform: FINDONE | FINDMANY | DROPTABLE | UPSERT | DELETEONE | DELETEMANY | INIT | UPDATEONE | UPDATEMANY'
   query: 
     required: false
     description: "The query to execute"

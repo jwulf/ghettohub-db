@@ -14,6 +14,18 @@ It doesn't handle file conflicts yet, so simultaneous workflows will cause opera
 
 ## Use
 
+Supported operations:
+
+* FINDONE 
+* FINDMANY 
+* DROPTABLE 
+* UPSERT 
+* DELETEONE 
+* DELETEMANY 
+* INIT 
+* UPDATEONE 
+* UPDATEMANY
+
 * Upsert a new record:
 
 ```
@@ -32,18 +44,9 @@ jobs:
         uses: jwulf/ghettohubDB@master
         with:
           operation: UPSERT
-          record:  |
-            '{"name": "Joe Bloggs", "address": "The Dog House"}'
-          table: customers
-      - name: Commit files
-        run: |
-          git config --local user.email "action@github.com"
-          git config --local user.name "GitHub Action"
-          git diff --quiet && git diff --staged --quiet || (git commit -m "Update by GitHub Action from rebuild" -a)
-      - name: Push changes
-        uses: ad-m/github-push-action@master
-        with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
+          record: '{"name": "Joe Bloggs", "address": "The Dog House"}'
+          table: customers
 ```
 
 * Find a record:
