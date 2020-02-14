@@ -43,17 +43,13 @@ async function run(): Promise<void> {
   }
   const db = new DatabaseDriver(parsedConfig.config.basedir as string)
 
-  const operationResult = await Operations[parsedConfig.config.operation](
+  const operationResult = Operations[parsedConfig.config.operation](
     parsedConfig.config,
     db
   )
-  if (operationResult.result) {
-    core.info(JSON.stringify(operationResult.result))
-    core.setOutput('result', JSON.stringify(operationResult.result))
-  }
-  if (operationResult.error) {
-    core.setOutput('error', JSON.stringify(operationResult.error))
-  }
+
+  core.info(JSON.stringify(operationResult.result))
+  core.setOutput('result', JSON.stringify(operationResult.result))
 }
 
 run()

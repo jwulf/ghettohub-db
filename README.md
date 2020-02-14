@@ -32,9 +32,10 @@ jobs:
         uses: jwulf/ghettohubDB@master
         with:
           operation: UPSERT
-          record: ${{ github.event.client_payload.record }}
+          record:  |
+            '{"name": "Joe Bloggs", "address": "The Dog House"}'
           table: customers
-        uses: stefanzweifel/git-auto-commit-action@v3.0.0
+      - uses: stefanzweifel/git-auto-commit-action@v3.0.0
         with:
           commit_message: Upsert record
           # Optional name of the branch the commit should be pushed to
@@ -50,7 +51,7 @@ jobs:
 * Find a record:
 
 ```
-name: Upsert record
+name: Find record
 
 on: [repository_dispatch]
 
