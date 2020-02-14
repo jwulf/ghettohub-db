@@ -4,7 +4,7 @@ set -e
 INPUT_BRANCH=${INPUT_BRANCH:-master}
 INPUT_FORCE=${INPUT_FORCE:-false}
 INPUT_TAGS=${INPUT_TAGS:-false}
-INPUT_DIRECTORY=${INPUT_DIRECTORY:-'.'}
+INPUT_DIRECTORY="./${INPUT_BASEDIR:-'.'}"
 _FORCE_OPTION=''
 REPOSITORY=${INPUT_REPOSITORY:-$GITHUB_REPOSITORY}
 
@@ -23,6 +23,11 @@ if ${TAGS}; then
 fi
 
 cd ${INPUT_DIRECTORY}
+
+git config --local user.email "action@github.com"
+git config --local user.name "GhettoHubDB GitHub Action"
+git add .
+git commit -m "Database commit"
 
 remote_repo="https://${GITHUB_ACTOR}:${INPUT_GITHUB_TOKEN}@github.com/${REPOSITORY}.git"
 
