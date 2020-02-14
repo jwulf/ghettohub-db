@@ -2,7 +2,7 @@ import fs from 'fs'
 
 type DBTableData = JSONDoc[]
 export interface JSONDoc {
-  [key: string]: string | number | JSONDoc | JSONDoc[]
+  [key: string]: string | number | boolean | JSONDoc | JSONDoc[]
 }
 export class DatabaseDriver {
   basedir: string

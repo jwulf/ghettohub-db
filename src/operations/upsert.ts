@@ -32,6 +32,7 @@ export const upsert: GhettoDBOperationImpl = (config, db): OperationOutcome => {
   let table = db.readTable(tablename as string)
 
   let newRecord: JSONDoc
+  const result: JSONDoc = {}
   if (!jsonRecord._id && !query) {
     newRecord = createNewRecord(jsonRecord)
     table.push(newRecord)
@@ -40,6 +41,8 @@ export const upsert: GhettoDBOperationImpl = (config, db): OperationOutcome => {
     if (existingRecord.length === 0) {
       newRecord = createNewRecord(jsonRecord)
       table.push(newRecord)
+      result.new = true
+      result.update = false
     } else {
       newRecord = {
         ...jsonRecord,
@@ -48,6 +51,8 @@ export const upsert: GhettoDBOperationImpl = (config, db): OperationOutcome => {
       table = table.map(rec =>
         rec._id === existingRecord[0]._id ? newRecord : rec
       )
+      result.update = true
+      result.new = false
     }
   }
 
