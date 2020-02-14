@@ -69,6 +69,6 @@ jobs:
           operation: FINDONE
           query: '{"name": "Joe Bloggs"}'
           table: customers
-      - name: Commit DB Changes
+      - name: Echo out record
         run: echo ${{ steps.find-operation.outputs.result }}
 ```
