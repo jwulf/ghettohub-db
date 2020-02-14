@@ -1,5 +1,5 @@
 <p align="center">
-  <a href="https://github.com/jwulf/ghettohubDB/actions"><img alt="typescript-action status" src="https://github.com/jwulf/ghettohubDB/workflows/build-test/badge.svg"></a>
+  <a href="https://github.com/jwulf/ghettohub-db/actions"><img alt="typescript-action status" src="https://github.com/jwulf/ghettohub-db/workflows/build-test/badge.svg"></a>
 </p>
 
 # GhettoHub DB - a JSON DB in a GitHub repo via GitHub Actions
@@ -74,7 +74,7 @@ jobs:
       - uses: actions/checkout@v2
       - name: Init
         id: init
-        uses: jwulf/ghettohubDB@master
+        uses: jwulf/ghettohub-db@master
         with:
           operation: INIT
           tables: customers,orders,stock
@@ -106,7 +106,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: Upsert record
-        uses: jwulf/ghettohubDB@master
+        uses: jwulf/ghettohub-db@master
         with:
           operation: UPSERT
           github_token: ${{ secrets.GITHUB_TOKEN }}
@@ -137,7 +137,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: Upsert record
-        uses: jwulf/ghettohubDB@master
+        uses: jwulf/ghettohub-db@master
         with:
           operation: UPSERT
           github_token: ${{ secrets.GITHUB_TOKEN }}
@@ -162,7 +162,7 @@ jobs:
       - uses: actions/checkout@v2
       - name: Find record
         id: find-operation
-        uses: jwulf/ghettohubDB@master
+        uses: jwulf/ghettohub-db@master
         with:
           operation: FINDONE
           query: '{"name": "Joe Bloggs"}'
