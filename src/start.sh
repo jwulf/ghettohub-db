@@ -28,6 +28,8 @@ git config --local user.email "action@github.com"
 git config --local user.name "GhettoHubDB GitHub Action"
 git add .
 git commit -m "Database commit"
+# Here we do a git pull, this will deal with some concurrent update scenarios
+git pull
 
 remote_repo="https://${GITHUB_ACTOR}:${INPUT_GITHUB_TOKEN}@github.com/${REPOSITORY}.git"
 

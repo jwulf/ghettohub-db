@@ -24,7 +24,9 @@ export const update: GhettoDBOperationImpl = (config, db): OperationOutcome => {
       : []
 
   data = data.map(rec =>
-    recordsToUpdate.includes(rec._id) ? {...rec, ...updatePartial} : rec
+    recordsToUpdate.includes(rec._id)
+      ? {...rec, ...updatePartial, __dirty: true}
+      : rec
   )
 
   db.flushTable(table, data)

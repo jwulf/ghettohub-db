@@ -4,6 +4,7 @@ type DBTableData = JSONDoc[]
 export interface JSONDoc {
   [key: string]: string | number | boolean | JSONDoc | JSONDoc[]
 }
+
 export class DatabaseDriver {
   basedir: string
   dirty = false
@@ -15,27 +16,46 @@ export class DatabaseDriver {
   }
 
   dropTable(tablename: string): void {
-    const filename = this.getTableFile(tablename)
-    if (fs.existsSync(filename)) {
-      fs.unlinkSync(filename)
+    const dir = this.getTableDirectory(tablename)
+    if (fs.existsSync(dir)) {
+      fs.rmdirSync(dir, {recursive: true})
     }
   }
 
   readTable(tablename: string): DBTableData {
-    const filename = this.getTableFile(tablename)
-    if (fs.existsSync(filename)) {
-      return JSON.parse(fs.readFileSync(filename, 'utf8'))
+    const dir = this.getTableDirectory(tablename)
+    if (fs.existsSync(dir)) {
+      const files = fs.readdirSync(dir)
+      const table: JSONDoc[] = files.map(
+        (file): JSONDoc => JSON.parse(fs.readFileSync(`${dir}/${file}`, 'utf8'))
+      )
+      return table
     }
     return []
   }
 
-  flushTable(tablename: string, tableData: any): void {
-    const tableFile = this.getTableFile(tablename)
-    fs.writeFileSync(tableFile, JSON.stringify(tableData, null, 2))
-    this.dirty = true
+  flushTable(tablename: string, tableData: JSONDoc[]): void {
+    const dir = this.getTableDirectory(tablename)
+    if (!fs.existsSync(dir)) {
+      fs.mkdirSync(dir, {recursive: true})
+    }
+    for (const record of tableData || []) {
+      if (record.__dirty) {
+        delete record.__dirty
+        fs.writeFileSync(
+          `${dir}/${record._id}.json`,
+          JSON.stringify(record, null, 2)
+        )
+        this.dirty = true
+      }
+      if (record.__delete) {
+        fs.unlinkSync(`${dir}/${record._id}.json`)
+        this.dirty = true
+      }
+    }
   }
 
-  private getTableFile(tablename: string): string {
-    return `${this.basedir}/${tablename}.json`
+  private getTableDirectory(tablename: string): string {
+    return `${this.basedir}/${tablename}`
   }
 }

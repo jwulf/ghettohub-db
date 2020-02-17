@@ -68,6 +68,7 @@ function createNewRecord(jsonRecord: JSONDoc): JSONDoc {
   return {
     ...jsonRecord,
     _updated: new Date().toString(),
-    _id: uuid()
+    _id: uuid(),
+    __dirty: true
   }
 }

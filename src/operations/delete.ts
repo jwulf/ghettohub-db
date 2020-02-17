@@ -23,7 +23,9 @@ export const deleteRecords: GhettoDBOperationImpl = (
       ? [candidates[0]]
       : []
 
-  data = data.filter(rec => !recordsToDelete.includes(rec._id))
+  data = data.map(rec =>
+    recordsToDelete.includes(rec._id) ? {...rec, __delete: true} : rec
+  )
 
   db.flushTable(table, data)
 
