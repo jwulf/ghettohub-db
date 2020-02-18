@@ -86,7 +86,25 @@ jobs:
 Output:
 
 ```
-{"operations":{"DELETE":"DELETE","FINDMANY":"FINDMANY","INIT":"INIT","UPSERT":"UPSERT","FINDONE":"FINDONE","DELETEONE":"DELETEONE","DELETEMANY":"DELETEMANY","UPDATEONE":"UPDATEONE","UPDATEMANY":"UPDATEMANY","DROPTABLE":"DROPTABLE"},"tables":{"customers":"customers","orders":"orders","stock":"stock"}}
+{
+  "operations": {
+    "DELETE": "DELETE",
+    "FINDMANY": "FINDMANY",
+    "INIT": "INIT", 
+    "UPSERT": "UPSERT", 
+    "FINDONE": "FINDONE", 
+    "DELETEONE": "DELETEONE", 
+    "DELETEMANY": "DELETEMANY", 
+    "UPDATEONE": "UPDATEONE", 
+    "UPDATEMANY": "UPDATEMANY", 
+    "DROPTABLE": "DROPTABLE"
+  }, 
+  "tables": {
+    "customers": "customers", 
+    "orders": "orders", 
+    "stock": "stock"
+  }
+}
 ```
 
 ### Create a new record
@@ -117,7 +135,12 @@ jobs:
 Example output: 
 
 ```
-{"name":"Joe Bloggs","address":"The Dog House","_updated":"Fri Feb 14 2020 12:27:53 GMT+0000 (Coordinated Universal Time)","_id":"80256a29-9b7f-458a-a781-5d9ae7077d0d"}
+{
+  "name": "Joe Bloggs",
+  "address": "The Dog House",
+  "_updated": "Fri Feb 14 2020 12:27:53 GMT+0000 (Coordinated Universal Time)",
+  "_id": "80256a29-9b7f-458a-a781-5d9ae7077d0d"
+}
 ```
 
 ## Upsert a record
@@ -174,6 +197,15 @@ jobs:
 Example output:
 
 ```
-{"found":true,"count":1,"record":{"name":"Joe Bloggs","address":"The Dog House","_updated":"Fri Feb 14 2020 12:47:16 GMT+0000 (Coordinated Universal Time)","_id":"a83936ee-f06c-46f2-b5ec-8e0b2e3367a1"}}
+{
+  "found": true,
+  "count": 1,
+  "record": {
+    "name": "Joe Bloggs",
+    "address": "The Dog House",
+    "_updated":"Fri Feb 14 2020 12:47:16 GMT+0000 (Coordinated Universal Time)",
+    "_id":"a83936ee-f06c-46f2-b5ec-8e0b2e3367a1"
+  }
+}
 ```
 
