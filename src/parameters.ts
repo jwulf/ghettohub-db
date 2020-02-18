@@ -5,14 +5,14 @@ const requiredParametersForOperation: {
   [key in GhettoDBOperation]: Array<KeyOfGhetto>
 } = {
   INIT: [],
-  DELETEONE: ['table', 'query'],
-  DELETEMANY: ['table', 'query'],
+  DELETEONE: ['table', 'query', 'github_token'],
+  DELETEMANY: ['table', 'query', 'github_token'],
   FINDONE: ['table', 'query'],
   FINDMANY: ['table', 'query'],
-  UPSERT: ['table', 'record'],
-  UPDATEONE: ['table', 'record', 'query'],
-  UPDATEMANY: ['table', 'record', 'query'],
-  DROPTABLE: ['table']
+  UPSERT: ['table', 'record', 'github_token'],
+  UPDATEONE: ['table', 'record', 'query', 'github_token'],
+  UPDATEMANY: ['table', 'record', 'query', 'github_token'],
+  DROPTABLE: ['table', 'github_token']
 }
 
 export function missingParameters<T, K extends keyof T>(

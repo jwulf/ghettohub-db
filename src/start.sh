@@ -7,7 +7,7 @@ INPUT_TAGS=${INPUT_TAGS:-false}
 INPUT_DIRECTORY="./${INPUT_BASEDIR:-'.'}"
 _FORCE_OPTION=''
 REPOSITORY=${INPUT_REPOSITORY:-$GITHUB_REPOSITORY}
-
+GITHUB_ACTOR="ghettohub-db"
 echo "Push to branch $INPUT_BRANCH";
 [ -z "${INPUT_GITHUB_TOKEN}" ] && {
     echo 'Missing input "github_token: ${{ secrets.GITHUB_TOKEN }}".';

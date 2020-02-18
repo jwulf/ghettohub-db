@@ -24,6 +24,7 @@ export interface GhettoDBOperationWithParameters {
   query?: string
   tables?: string
   verbose?: boolean
+  github_token?: string
 }
 
 async function run(): Promise<void> {
