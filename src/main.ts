@@ -23,6 +23,7 @@ export interface GhettoDBOperationWithParameters {
   basedir?: string
   query?: string
   tables?: string
+  verbose?: boolean
 }
 
 async function run(): Promise<void> {
@@ -36,7 +37,8 @@ async function run(): Promise<void> {
     record: core.getInput('record'),
     basedir: core.getInput('basedir') || 'db',
     query: core.getInput('query'),
-    tables: core.getInput('tables')
+    tables: core.getInput('tables'),
+    verbose: core.getInput('verbose') == 'true'
   })
 
   core.info(`Basedir: ${path.resolve('./' + parsedConfig.config?.basedir)}`)
@@ -50,10 +52,17 @@ async function run(): Promise<void> {
   }
   const db = new DatabaseDriver(parsedConfig.config.basedir as string)
 
+  if (parsedConfig.config.verbose) {
+    core.info(`Operation: ${parsedConfig.config.operation}`)
+    core.info(`Config: ${JSON.stringify(parsedConfig, null, 2)}`)
+  }
   const operationResult = Operations[parsedConfig.config.operation](
     parsedConfig.config,
     db
   )
+  if (parsedConfig.config.verbose) {
+    core.info(`Result: ${JSON.stringify(operationResult.result, null, 2)}`)
+  }
 
   core.info(JSON.stringify(operationResult.result))
   core.setOutput('result', JSON.stringify(operationResult.result))

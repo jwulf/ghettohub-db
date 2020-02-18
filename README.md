@@ -28,15 +28,27 @@ Supported operations:
 
 | Operation | Required parameters | Optional parameters |
 | --- | ---| --- |
-| `FINDONE` | `operation`, `table`, `query` | `basedir` |
-| `FINDMANY` | `operation`, `table`, `query` | `basedir` |
-| `DROPTABLE` | `operation`, `table`, `github_token` | `basedir` |
-| `UPSERT`  | `operation`, `table`, `record`, `github_token` | `query`, `basedir` |
-| `DELETEONE` | `operation`, `table`, `query`, `github_token` | `basedir` |
-| `DELETEMANY` | `operation`, `table`, `query`, `github_token` | `basedir` |
-| `INIT`  | `operation`  | `tables` |
-| `UPDATEONE`   |`operation`, `table`, `query`, `record`, `github_token` | `basedir` |
-| `UPDATEMANY`  |`operation`, `table`, `query`, `record`, `github_token` | `basedir` |
+| `FINDONE` | `operation`, `table`, `query` | `basedir`, `verbose` |
+| `FINDMANY` | `operation`, `table`, `query` | `basedir`, `verbose` |
+| `DROPTABLE` | `operation`, `table`, `github_token` | `basedir`, `verbose` |
+| `UPSERT`  | `operation`, `table`, `record`, `github_token` | `query`, `basedir`, `verbose` |
+| `DELETEONE` | `operation`, `table`, `query`, `github_token` | `basedir`, `verbose` |
+| `DELETEMANY` | `operation`, `table`, `query`, `github_token` | `basedir`, `verbose` |
+| `INIT`  | `operation`  | `tables`, `verbose` |
+| `UPDATEONE`   |`operation`, `table`, `query`, `record`, `github_token` | `basedir`, `verbose` |
+| `UPDATEMANY`  |`operation`, `table`, `query`, `record`, `github_token` | `basedir`, `verbose` |
+
+## Parameters 
+
+| Parameter | Description |
+| --- | --- |
+| `operation` | A GhettoHub DB Operation |
+| `table` | The table name - tables are materialised as sub-directories |
+| `query` | A GhettoHub DB Query: `Partial<record>` |
+| `record` | JSON-stringified JSON Document |
+| `github_token` | Set to `${{ secrets.GITHUB_TOKEN }}` |
+| `basedir` | A directory in the repo for the database. Default: `db` |
+| `verbose` | Set to `true` for verbose output to aid in debugging |
 
 ## Query Syntax
 

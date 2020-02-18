@@ -24,6 +24,9 @@ inputs:
   tables:
     required: false
     description: "A list of tablenames to initialise a database"
+  verbose:
+    required: false
+    description: "Set to true for verbose output"
 runs:
   using: 'node12'
   main: 'dist/index.js'
