@@ -6,7 +6,7 @@
 
 ![](img/monkey.jpg)
 
-**Definitely _not_ webscale.**
+**The World's Least Web Scale JSON DB.**
 
 With this GitHub Action you can use a GitHub repo as an extremely low-fi JSON DB.
 
