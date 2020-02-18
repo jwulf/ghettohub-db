@@ -136,4 +136,25 @@ test('The whole thing', () => {
   )
   expect(deleteMany.result.deletedRecordIds.includes(kim.result._id)).toBe(true)
   Operations.DROPTABLE({table}, db)
+  expect(
+    Operations.FINDMANY({operation: 'FINDMANY', table, query: '{}'}, db).result
+      .count
+  ).toBe(0)
+  Operations.UPSERT(
+    {record: JSON.stringify({name: 'Rick Rubin'}), table: 'party'},
+    db
+  )
+  expect(
+    Operations.FINDMANY(
+      {operation: 'FINDMANY', table: 'party', query: '{}'},
+      db
+    ).result.count
+  ).toBe(1)
+  Operations.DROPDB({}, db)
+  expect(
+    Operations.FINDMANY(
+      {operation: 'FINDMANY', table: 'party', query: '{}'},
+      db
+    ).result.count
+  ).toBe(0)
 })

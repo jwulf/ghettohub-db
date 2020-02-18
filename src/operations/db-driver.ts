@@ -15,10 +15,18 @@ export class DatabaseDriver {
     this.basedir = `./${basedir}`
   }
 
+  dropDB(): void {
+    if (fs.existsSync(this.basedir)) {
+      fs.rmdirSync(this.basedir, {recursive: true})
+      this.dirty = true
+    }
+  }
+
   dropTable(tablename: string): void {
     const dir = this.getTableDirectory(tablename)
     if (fs.existsSync(dir)) {
       fs.rmdirSync(dir, {recursive: true})
+      this.dirty = true
     }
   }
 

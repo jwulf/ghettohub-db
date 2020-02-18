@@ -6,6 +6,7 @@ import {find} from './find'
 import {update} from './update'
 import {deleteRecords} from './delete'
 import {drop} from './droptable'
+import {dropDB} from './dropdb'
 
 const Operations: {
   [key in GhettoDBOperation]: GhettoDBOperationImpl
@@ -18,7 +19,8 @@ const Operations: {
   FINDMANY: find,
   UPSERT: upsert,
   UPDATEMANY: update,
-  UPDATEONE: update
+  UPDATEONE: update,
+  DROPDB: dropDB
 }
 
 export default Operations

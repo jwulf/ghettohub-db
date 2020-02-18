@@ -12,7 +12,8 @@ const requiredParametersForOperation: {
   UPSERT: ['table', 'record', 'github_token'],
   UPDATEONE: ['table', 'record', 'query', 'github_token'],
   UPDATEMANY: ['table', 'record', 'query', 'github_token'],
-  DROPTABLE: ['table', 'github_token']
+  DROPTABLE: ['table', 'github_token'],
+  DROPDB: ['github_token']
 }
 
 export function missingParameters<T, K extends keyof T>(

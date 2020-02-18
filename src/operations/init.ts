@@ -25,7 +25,8 @@ export const init: GhettoDBOperationImpl = (config): OperationOutcome => {
         DELETEMANY: 'DELETEMANY',
         UPDATEONE: 'UPDATEONE',
         UPDATEMANY: 'UPDATEMANY',
-        DROPTABLE: 'DROPTABLE'
+        DROPTABLE: 'DROPTABLE',
+        DROPDB: 'DROPDB'
       },
       tables
     }

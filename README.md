@@ -31,6 +31,7 @@ Supported operations:
 | `FINDONE` | `operation`, `table`, `query` | `basedir`, `verbose` |
 | `FINDMANY` | `operation`, `table`, `query` | `basedir`, `verbose` |
 | `DROPTABLE` | `operation`, `table`, `github_token` | `basedir`, `verbose` |
+| `DROPDB` | `operation`, `github_token` | `basedir` |
 | `UPSERT`  | `operation`, `table`, `record`, `github_token` | `query`, `basedir`, `verbose` |
 | `DELETEONE` | `operation`, `table`, `query`, `github_token` | `basedir`, `verbose` |
 | `DELETEMANY` | `operation`, `table`, `query`, `github_token` | `basedir`, `verbose` |
@@ -109,7 +110,8 @@ Output:
     "DELETEMANY": "DELETEMANY", 
     "UPDATEONE": "UPDATEONE", 
     "UPDATEMANY": "UPDATEMANY", 
-    "DROPTABLE": "DROPTABLE"
+    "DROPTABLE": "DROPTABLE",
+    "DROPDB": "DROPDB"
   }, 
   "tables": {
     "customers": "customers", 

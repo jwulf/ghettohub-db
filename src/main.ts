@@ -15,6 +15,7 @@ export type GhettoDBOperation =
   | 'UPDATEONE'
   | 'UPDATEMANY'
   | 'DROPTABLE'
+  | 'DROPDB'
 
 export interface GhettoDBOperationWithParameters {
   operation: GhettoDBOperation

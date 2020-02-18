@@ -25,7 +25,8 @@ test('resolveRequiredParameters', () => {
   const validUpsertOperation: GhettoDBOperationWithParameters = {
     operation: 'UPSERT',
     table: 'customers',
-    record: '{"name": "something"}'
+    record: '{"name": "something"}',
+    github_token: 'shn'
   }
   const parsed = resolveRequiredParameters(validUpsertOperation)
   expect(parsed.valid).toBe(true)
