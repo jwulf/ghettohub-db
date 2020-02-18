@@ -10,7 +10,7 @@ import {JSONDoc} from './db-driver'
  *
  */
 export const upsert: GhettoDBOperationImpl = (config, db): OperationOutcome => {
-  const {table: tablename, record} = config
+  const {table: tablename, record, verbose} = config
 
   let jsonRecord: JSONDoc
   try {

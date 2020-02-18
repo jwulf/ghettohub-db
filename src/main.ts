@@ -64,6 +64,10 @@ async function run(): Promise<void> {
     core.info(`Result: ${JSON.stringify(operationResult.result, null, 2)}`)
   }
 
+  if (operationResult.error) {
+    core.setFailed(operationResult.error)
+  }
+
   core.info(JSON.stringify(operationResult.result))
   core.setOutput('result', JSON.stringify(operationResult.result))
   if (db.dirty) {
