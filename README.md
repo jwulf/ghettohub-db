@@ -14,7 +14,7 @@ The action will perform db operations on JSON data stored as flat files (one fil
 
 It doesn't handle git merge conflicts yet, so simultaneous workflows may cause operations to fail.
 
-This GitHub Action was built for clientless-computing (zero-install) with [Camunda Cloud](https://camunda.io).
+This GitHub Action was built for clientless-computing (zero-install) with [Camunda Cloud](https://camunda.io), using the [Zeebe Action](https://github.com/marketplace/actions/zeebe-action).
 
 ## Tables
 
