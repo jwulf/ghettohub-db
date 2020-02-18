@@ -10,7 +10,7 @@
 
 With this GitHub Action you can use a GitHub repo as an extremely low-fi JSON DB.
 
-The action will perform db operations on JSON data stored as flat files (one file per table).
+The action will perform db operations on JSON data stored as flat files (one directory per table, one file per record).
 
 It doesn't handle git merge conflicts yet, so simultaneous workflows may cause operations to fail.
 
