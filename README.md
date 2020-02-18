@@ -18,9 +18,9 @@ This GitHub Action was built for clientless-computing (zero-install) with [Camun
 
 ## Tables
 
-Tables are `${tablename}.json` documents stored in `${basedir}` in the repo. You can specify a custom directory if you want, with the `basedir` argument.
+Tables are `${tablename}` subdirectories stored in `${basedir}` in the repo. By default `${basedir}` is `db`. You can specify a custom directory if you want, with the `basedir` argument.
 
-Tables are lazily created on write - as soon as you create a record in a table that doesn't exist, the database driver will create it. If you attempt to read from a table that has not yet been created, no error will be raised, no record will be returned, and no table will be created.
+Tables are lazily created on write - as soon as you create a record in a table that doesn't exist, the database driver will create a folder. If you attempt to read from a table that has not yet been created, no error will be raised, no record will be returned, and no table will be created.
 
 ## Operations
 
