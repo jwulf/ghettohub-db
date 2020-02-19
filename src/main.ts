@@ -40,7 +40,8 @@ async function run(): Promise<void> {
     basedir: core.getInput('basedir') || 'db',
     query: core.getInput('query'),
     tables: core.getInput('tables'),
-    verbose: core.getInput('verbose') == 'true'
+    verbose: core.getInput('verbose') == 'true',
+    github_token: core.getInput('github_token')
   })
 
   core.info(`Basedir: ${path.resolve('./' + parsedConfig.config?.basedir)}`)

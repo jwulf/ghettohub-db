@@ -517,7 +517,8 @@ function run() {
             basedir: core.getInput('basedir') || 'db',
             query: core.getInput('query'),
             tables: core.getInput('tables'),
-            verbose: core.getInput('verbose') == 'true'
+            verbose: core.getInput('verbose') == 'true',
+            github_token: core.getInput('github_token')
         });
         core.info(`Basedir: ${path_1.default.resolve('./' + ((_a = parsedConfig.config) === null || _a === void 0 ? void 0 : _a.basedir))}`);
         if (!parsedConfig.valid) {
